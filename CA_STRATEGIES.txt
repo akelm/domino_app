@@ -1,0 +1,5 @@
+AllD 3D 2D 2C 1D
+2C 2D 2DC 2D 3DC
+AllC 3D 0DC 0C AllD
+2c 0dc 3c 1dc 0d
+2c 1d 3d 1c allc
