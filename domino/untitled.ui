@@ -479,6 +479,9 @@
         <property name="minimum">
          <number>1</number>
         </property>
+        <property name="maximum">
+         <number>9999</number>
+        </property>
         <property name="value">
          <number>5</number>
         </property>
@@ -510,6 +513,9 @@
         </property>
         <property name="minimum">
          <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>9999</number>
         </property>
         <property name="value">
          <number>5</number>
@@ -741,6 +747,9 @@
         <property name="minimum">
          <number>1</number>
         </property>
+        <property name="maximum">
+         <number>9999</number>
+        </property>
         <property name="value">
          <number>5</number>
         </property>
@@ -775,6 +784,9 @@
         </property>
         <property name="minimum">
          <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>9999</number>
         </property>
        </widget>
       </item>
@@ -970,59 +982,6 @@ reward</string>
       </layout>
      </item>
     </layout>
-   </widget>
-   <widget class="QGroupBox" name="groupBox_4">
-    <property name="geometry">
-     <rect>
-      <x>220</x>
-      <y>280</y>
-      <width>141</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Species</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-    <widget class="QComboBox" name="species_comboBox">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>1</x>
-       <y>21</y>
-       <width>131</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="sizeAdjustPolicy">
-      <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-     </property>
-     <item>
-      <property name="text">
-       <string>type 1  ▀</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>type 2  ▀▀</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>type 3  ▌</string>
-      </property>
-     </item>
-    </widget>
    </widget>
    <widget class="QFrame" name="debug_frame">
     <property name="enabled">
@@ -1323,7 +1282,7 @@ reward</string>
      </rect>
     </property>
     <property name="text">
-     <string>debug</string>
+     <string>load init files</string>
     </property>
    </widget>
    <widget class="QPushButton" name="start_pushButton">
@@ -1343,7 +1302,7 @@ reward</string>
     <property name="geometry">
      <rect>
       <x>220</x>
-      <y>330</y>
+      <y>290</y>
       <width>141</width>
       <height>51</height>
      </rect>
@@ -1415,7 +1374,7 @@ reward</string>
     <property name="geometry">
      <rect>
       <x>220</x>
-      <y>380</y>
+      <y>350</y>
       <width>141</width>
       <height>56</height>
      </rect>
@@ -1503,6 +1462,22 @@ reward</string>
       </item>
      </layout>
     </widget>
+   </widget>
+   <widget class="QCheckBox" name="log_to_debug_checkBox">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>420</y>
+      <width>139</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>log to debug</string>
+    </property>
    </widget>
   </widget>
  </widget>

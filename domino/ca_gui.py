@@ -9,16 +9,16 @@ from PyQt5.QtWidgets import QPushButton, QFileDialog, QSpinBox, QComboBox, QLabe
 from PyQt5.uic import loadUi
 
 from .add_log_level import addLoggingLevel
-from .calc_mappings import img_file_pattern, img_file_labels
+from .calc_mappings import img_file_pattern, img_file_labels, debug_loc
 from .calculate import calc
 from .parameters import Parameters
 from .params_mapping import getters
 
 try:
-    addLoggingLevel("custom", 51, methodName="custom")
+    addLoggingLevel("custom", 49, methodName="custom")
+    # logging.basicConfig(filename=debug_loc, level="custom", format="%(message)s", filemode='w')
 except AttributeError:
     pass
-logging.basicConfig(filename='debug.txt', level="custom", format="%(message)s", filemode='w')
 
 script_dir = os.path.dirname(__file__)
 gui_xml = os.path.join(script_dir,  "untitled.ui")
@@ -119,9 +119,9 @@ class UserInterface(QtWidgets.QMainWindow):
                 (self.kvar2_LineEdit, "k_var_1"),
                 (self.k_buttonGroup, "k_change"),
 
-                (self.species_comboBox, "species"),
                 (self.level_LineEdit, "synchronization"),
-                (self.debug_checkBox, "debug"),
+                (self.log_to_debug_checkBox, "log_to_debug"),
+                (self.debug_checkBox, "load_init_files"),
                 (self.readca_btn, "state_filename"),
                 (self.readstr_btn, "strat_filename")
 

@@ -88,15 +88,16 @@ lowest_py = ''
 top_pyw = []
 for frame in stack:
     ext = os.path.splitext(frame.filename)[1]
-    if ext.lower() == ".py":
+    if ext.lower() == ".py" and "domino_app" in ext.lower():
         lowest_py = frame.filename
-    if ext.lower() == ".pyw":
+    if ext.lower() == ".pyw" and "domino_app" in ext.lower():
         top_pyw = frame.filename
 
 res_dir = os.path.dirname(top_pyw[0] if top_pyw else lowest_py)
 img_file_pattern = os.path.join(res_dir, 'img' , "exp_%d_%s_%d.png")
 img_file_labels = ('state', 'strategy', "payoff")
 results_loc = os.path.join(res_dir, "results.txt")
+debug_loc = os.path.join(res_dir, "debug.txt")
 std_results_loc = os.path.join(res_dir, "std_results.txt")
 state_filename = os.path.join(res_dir, "CA_STATE.txt")
 strat_filename = os.path.join(res_dir, "CA_STRATEGIES.txt")

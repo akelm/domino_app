@@ -1,8 +1,11 @@
+import logging
 import string
 from dataclasses import dataclass, field, InitVar, asdict, make_dataclass, fields
 from datetime import datetime
 
 import numpy as np
+
+from domino.calc_mappings import debug_loc
 
 
 class CompetitionType:
@@ -51,7 +54,8 @@ class Parameters:
     species: int = 1
     synchronization: float = 1
 
-    debug: int = False
+    log_to_debug: InitVar[int] = False
+    load_init_files: int = False
     ca_state: np.ndarray = field(default=None, init=False)
     ca_strat: np.ndarray = field(default=None, init=False)
 
@@ -60,8 +64,8 @@ class Parameters:
 
     min_payoff: float = field(default=0, init=False)
 
-    def __post_init__(self, state_filename=None, strat_filename=None):
-        if all((self.debug, state_filename is not None, strat_filename is not None)):
+    def __post_init__(self, log_to_debug = False, state_filename=None, strat_filename=None):
+        if all((self.load_init_files, state_filename is not None, strat_filename is not None)):
             self.ca_state = np.loadtxt(state_filename, dtype=int)
             self.ca_strat = np.loadtxt(strat_filename, dtype=str)
 
@@ -70,6 +74,11 @@ class Parameters:
             if self.ca_strat.shape != self.ca_state.shape:
                 raise Exception("ca_state and ca_strat have diff size.")
             self.mrows, self.ncols = self.ca_state.shape
+
+        if not log_to_debug:
+            logging.disable(49)
+        else:
+            logging.basicConfig(filename=debug_loc, level="custom", format="%(message)s", filemode='w')
 
         self.min_payoff = min(self.dd_penalty,
                               self.dc_penalty,
@@ -99,7 +108,7 @@ class Parameters:
         self.k_var_1 = int(self.k_var_1)
         self.species = int(self.species)
         self.synchronization = int(self.synchronization)
-        self.debug = int(self.debug)
+        self.load_init_files = int(self.load_init_files)
 
     def freeze(self):
         return FrozenParameters(**asdict(self))

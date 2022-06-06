@@ -6,13 +6,13 @@ from copy import deepcopy
 from dataclasses import asdict
 from pprint import pformat
 
-from .calc_mappings import strat_filename, state_filename
+from .calc_mappings import strat_filename, state_filename, debug_loc
 from .add_log_level import addLoggingLevel
 from .sliding_window import sliding_window_view
 
 try:
-    addLoggingLevel("custom", 51, methodName="custom")
-    logging.basicConfig(filename='debug.txt', level="custom", format="%(message)s", filemode='w')
+    addLoggingLevel("custom", 49, methodName="custom")
+    # logging.basicConfig(filename=debug_loc, level="custom", format="%(message)s", filemode='w')
 except AttributeError:
     pass
 
@@ -46,6 +46,10 @@ def log_exper(i: int):
     logging.custom((" EXPERIMENT %d " % (i + 1)).center(80, "*"))
     logging.custom("\n")
 
+def log_finish():
+    logging.custom("\n\n")
+    logging.custom((" CALCULATIONS FINISHED ").center(80, "*"))
+    logging.custom("\n")
 
 def calc(params: Parameters):
     def log_params():
@@ -76,6 +80,7 @@ def calc(params: Parameters):
         history_to_img(history, exp_num)
         logging.debug("plotting finished in calc.py")
     multirun_statistics(stats)
+    log_finish()
 
 
 def new_state_array(state_arr, strat_arr):
@@ -135,6 +140,6 @@ if __name__ == "__main__":
                         special_penalty=-10, all_c=0.1,
                         all_d=0.1, k_d=0.3, k_c=0.3, k_dc=0.3, k_change=KType.constant, k_const=4, k_var_0=0, k_var_1=7,
                         species=0,
-                        synchronization=1.0, debug=False, state_filename=state_filename,
+                        synchronization=1.0, log_to_debug=False, load_init_files=False, state_filename=state_filename,
                         strat_filename=strat_filename)
     calc(params)
