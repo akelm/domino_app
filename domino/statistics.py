@@ -65,16 +65,18 @@ cols_merged = list(chain.from_iterable(zip(cols_av, cols_std)))
 
 
 def multirun_statistics(stats: List[pd.DataFrame]):
-    if not stats:
-        return
-    elif len(stats) == 1:
-        df = stats[0]
-        filename = results_loc
-    else:
+    if stats:
+        with open(results_loc, 'w') as file:
+            single_df: pd.DataFrame
+            for idx, single_df in enumerate(stats):
+                file.write("# EXPERIMENT %d\n" % (idx+1))
+                single_df.to_csv(file, mode='a',  sep='\t', float_format="%0.3f", index_label="iter")
+                file.write("\n\n")
+
         common_array = np.stack([df[cols_multirun].values for df in stats], axis=2)
         df = pd.DataFrame(np.nan, index=list(range(common_array.shape[0])), columns=cols_merged)
         df[cols_av] = common_array.mean(axis=2)
         df[cols_std] = common_array.std(axis=2)
         filename = std_results_loc
 
-    df.to_csv(filename, sep='\t', float_format="%0.3f", index_label="iter")
+        df.to_csv(filename, sep='\t', float_format="%0.3f", index_label="iter")
