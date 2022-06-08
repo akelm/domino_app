@@ -24,11 +24,11 @@ def initialize(params):
     else:
         state_array: np.ndarray = np.random.uniform(0, 1, params.mrows * params.ncols).reshape(
             [params.mrows, params.ncols])
-        state_array[state_array <= params.p_init_c] = 1
-        state_array[state_array > params.p_init_c] = 0
+        mask = state_array <= params.p_init_c
+        state_array[mask] = 1
+        state_array[np.logical_not(mask)] = 0
 
     state_array = state_array.astype(int)
-
     if params.ca_strat is not None:
         strat_array = strat_to_ind(params.ca_strat)
     else:
