@@ -94,7 +94,6 @@ class Parameters:
 
         self.mrows = int(self.mrows)
         self.ncols = int(self.ncols)
-        self.p_init_c = int(self.p_init_c)
         self.sharing = int(self.sharing)
         self.competition_type = int(self.competition_type)
         self.num_of_iter = int(self.num_of_iter)
