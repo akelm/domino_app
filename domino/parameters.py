@@ -9,8 +9,8 @@ from domino.calc_mappings import debug_loc
 
 
 class CompetitionType:
-    proportional = 0
-    tournament = 1
+    proportional = 1
+    tournament = 0
 
 
 class KType:

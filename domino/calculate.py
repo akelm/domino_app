@@ -104,6 +104,7 @@ def new_state_array(state_arr, strat_arr):
 
     view: np.ndarray = sliding_window_view(np.pad(state_arr, 1), (3, 3)).reshape(
         [-1, 3, 3])
+
     num_c = np.logical_and(np.logical_not(calc_mappings.pattern_c), view).sum(axis=(1, 2))
     function_mapping = map(calc_mappings.strategies_fun.__getitem__, strat_arr.reshape([-1]))
     new_states = np.array([f(x) for f, x in zip(function_mapping, num_c)]).reshape(state_arr.shape)
@@ -117,12 +118,13 @@ def iterate(current, params):
     # change state
     new_states = new_state_array(current.states, current.strategies)
 
+    # change strategies with competition
+    new_strat = change_strategy(current.payoff, current.strategies, params.synchronization, params.competition_type,
+                                params.min_payoff)
+
     # payoff  with opt sharing
     new_payoff = payoff_table(new_states, params)
 
-    # change strategies with competition
-    new_strat = change_strategy(new_payoff, current.strategies, params.synchronization, params.competition_type,
-                                params.min_payoff)
     # mutate
     new_states, new_strat = mutation(new_states, new_strat, params)
     # new_strat = strategy_mutation(new_strat, params.p_strat_mut)

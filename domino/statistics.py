@@ -4,9 +4,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 
-
-
-
+from . import calc_mappings
 from .calc_mappings import CurrentState, strategies_str, pattern_c, results_loc, std_results_loc
 from .sliding_window import sliding_window_view
 
@@ -27,12 +25,14 @@ headers = "f_C f_C_corr av_SUM f_allC f_allD f_kD f_kC f_kDC f_strat_ch".split()
 def statistics_single(history: List[CurrentState]):
     if history:
         df = pd.DataFrame(np.nan, index=list(range(len(history))), columns=headers)
-
+        correct_solutions = calc_mappings.correct_solutions(*history[0].states.shape)
         for ind, previous, current in zip(range(len(history)), [history[0]] + history[:-1], history):
             f_C = current.states.sum() / current.states.size
-            view: np.ndarray = sliding_window_view(np.pad(current.states, 1), (3, 3)).reshape(
-                [-1, 3, 3])
-            f_C_corr = np.all(view == pattern_c, axis=(1, 2)).sum() / current.states.size
+            # view: np.ndarray = sliding_window_view(np.pad(current.states, 1), (3, 3)).reshape(
+            #     [-1, 3, 3])
+            # f_C_corr = np.all(view == pattern_c, axis=(1, 2)).sum() / current.states.size
+
+            f_C_corr = np.max([(cs * current.states).sum()/current.states.sum() for cs in correct_solutions])
 
             av_SUM = current.payoff.sum() / current.payoff.size / 8
             f_allC = (current.strategies == strategies_str.index('allC')).sum() / current.strategies.size
@@ -70,7 +70,7 @@ def multirun_statistics(stats: List[pd.DataFrame]):
             single_df: pd.DataFrame
             for idx, single_df in enumerate(stats):
                 file.write("# EXPERIMENT %d\n" % (idx+1))
-                single_df.to_csv(file, mode='a',  sep='\t', float_format="%0.3f", index_label="iter")
+                single_df.to_csv(file, mode='a',  sep='\t', float_format="%0.3f", index_label="iter", line_terminator="\n")
                 file.write("\n\n")
 
         common_array = np.stack([df[cols_multirun].values for df in stats], axis=2)

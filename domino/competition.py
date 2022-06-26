@@ -68,10 +68,12 @@ def change_strategy(payoff_arr, strat_arr, sync_prob, competition_type=None, min
         view: np.ndarray = sliding_window_view(
             np.pad(payoff_arr, 1, constant_values=np.iinfo(int).min), (3, 3)).reshape(
             [-1, 9])
-        max_vals = np.max(view, axis=1)
-        center_is_max = view[:, 4] == max_vals
-        selected_ind = np.argmax(view, axis=1)
-        selected_ind[center_is_max] = 4
+        # max_vals = np.max(view, axis=1)
+        # center_is_max = view[:, 4] == max_vals
+        view_reordered = view[:, calc_mappings.neigh_list_flat_rev]
+        selected_ind_reordered = np.argmax(view_reordered, axis=1)
+        selected_ind = calc_mappings.neigh_flat_reverse(selected_ind_reordered)
+        # selected_ind[center_is_max] = 4
 
     sync_array = np.random.uniform(0, 1, selected_ind.size)
     selected_ind[sync_array > sync_prob] = 4

@@ -1,6 +1,7 @@
 import os
 from collections import namedtuple
 from functools import partial
+from itertools import product
 from typing import List
 
 import numpy as np
@@ -25,9 +26,37 @@ def all_d(_):
 def all_c(_):
     return 1
 
+def correct_solutions(n, m):
+    vec_n_list = []
+    vec_n_base = np.zeros([n, 1])
+    v = vec_n_base.copy()
+    v[0::2, 0] = 1
+    vec_n_list.append(v)
+    if n%2 == 0:
+        v = vec_n_base.copy()
+        v[1::2, 0] = 1
+        vec_n_list.append(v)
+
+    vec_m_list = []
+    vec_m_base = np.zeros([1, m])
+    v = vec_m_base.copy()
+    v[0, 0::2] = 1
+    vec_m_list.append(v)
+    if m % 2 == 0:
+        v = vec_m_base.copy()
+        v[0, 1::2] = 1
+        vec_m_list.append(v)
+
+    res_list = []
+    for n_mat, m_mat in product(vec_n_list, vec_m_list):
+        res_list.append( n_mat * m_mat )
+    return res_list
+
+
 
 neigh_list = [[0, 0, 1, 2, 2, 2, 1, 0], [1, 2, 2, 2, 1, 0, 0, 0]]
 neigh_list_flat = [8, 1, 2, 7, 0, 3, 6, 5, 4]
+neigh_list_flat_rev = [4, 1, 2, 5, 8, 7, 6, 3, 0]
 neigh_flat_translate = np.vectorize(neigh_list_flat.__getitem__)
 neigh_flat_reverse = np.vectorize(neigh_list_flat.index)
 
