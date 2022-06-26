@@ -43,8 +43,8 @@
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>131</width>
-       <height>161</height>
+       <width>137</width>
+       <height>210</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout_2">
@@ -82,7 +82,7 @@
          </size>
         </property>
         <property name="text" stdset="0">
-         <string>0.330</string>
+         <string>0,500</string>
         </property>
         <property name="decimals">
          <number>3</number>
@@ -94,7 +94,7 @@
          <double>0.001000000000000</double>
         </property>
         <property name="value">
-         <double>0.330000000000000</double>
+         <double>0.500000000000000</double>
         </property>
        </widget>
       </item>
@@ -126,7 +126,7 @@
          </size>
         </property>
         <property name="text" stdset="0">
-         <string>0.330</string>
+         <string>0,500</string>
         </property>
         <property name="decimals">
          <number>3</number>
@@ -138,7 +138,7 @@
          <double>0.001000000000000</double>
         </property>
         <property name="value">
-         <double>0.330000000000000</double>
+         <double>0.500000000000000</double>
         </property>
        </widget>
       </item>
@@ -170,7 +170,7 @@
          </size>
         </property>
         <property name="text" stdset="0">
-         <string>0.110</string>
+         <string>0,000</string>
         </property>
         <property name="decimals">
          <number>3</number>
@@ -182,7 +182,7 @@
          <double>0.001000000000000</double>
         </property>
         <property name="value">
-         <double>0.110000000000000</double>
+         <double>0.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -214,7 +214,7 @@
          </size>
         </property>
         <property name="text" stdset="0">
-         <string>0.110</string>
+         <string>0,000</string>
         </property>
         <property name="decimals">
          <number>3</number>
@@ -226,7 +226,7 @@
          <double>0.001000000000000</double>
         </property>
         <property name="value">
-         <double>0.110000000000000</double>
+         <double>0.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -258,7 +258,7 @@
          </size>
         </property>
         <property name="text" stdset="0">
-         <string>0.110</string>
+         <string>0,000</string>
         </property>
         <property name="decimals">
          <number>3</number>
@@ -270,7 +270,7 @@
          <double>0.001000000000000</double>
         </property>
         <property name="value">
-         <double>0.110000000000000</double>
+         <double>0.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -448,7 +448,7 @@
        <x>10</x>
        <y>20</y>
        <width>191</width>
-       <height>221</height>
+       <height>286</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout">
@@ -480,7 +480,7 @@
          </size>
         </property>
         <property name="text" stdset="0">
-         <string>5</string>
+         <string>50</string>
         </property>
         <property name="minimum">
          <number>1</number>
@@ -489,7 +489,7 @@
          <number>9999</number>
         </property>
         <property name="value">
-         <number>5</number>
+         <number>50</number>
         </property>
        </widget>
       </item>
@@ -515,7 +515,7 @@
          </size>
         </property>
         <property name="text" stdset="0">
-         <string>5</string>
+         <string>50</string>
         </property>
         <property name="minimum">
          <number>1</number>
@@ -524,7 +524,7 @@
          <number>9999</number>
         </property>
         <property name="value">
-         <number>5</number>
+         <number>50</number>
         </property>
        </widget>
       </item>
@@ -550,7 +550,7 @@
          </size>
         </property>
         <property name="text" stdset="0">
-         <string>0.001</string>
+         <string>0,500</string>
         </property>
         <property name="decimals">
          <number>3</number>
@@ -565,7 +565,7 @@
          <double>0.001000000000000</double>
         </property>
         <property name="value">
-         <double>0.001000000000000</double>
+         <double>0.500000000000000</double>
         </property>
         <property name="displayIntegerBase" stdset="0">
          <number>10</number>
@@ -631,7 +631,7 @@
          </size>
         </property>
         <property name="text" stdset="0">
-         <string>0.010</string>
+         <string>0,010</string>
         </property>
         <property name="decimals">
          <number>3</number>
@@ -669,7 +669,7 @@
          </size>
         </property>
         <property name="text" stdset="0">
-         <string>0.001</string>
+         <string>0,001</string>
         </property>
         <property name="decimals">
          <number>3</number>
@@ -707,7 +707,7 @@
          </size>
         </property>
         <property name="text" stdset="0">
-         <string>0.001</string>
+         <string>0,001</string>
         </property>
         <property name="decimals">
          <number>3</number>
@@ -870,7 +870,7 @@
        <item row="1" column="2">
         <widget class="QDoubleSpinBox" name="dc_penalty_lineEdit">
          <property name="text" stdset="0">
-          <string>-1.00</string>
+          <string>-1,00</string>
          </property>
          <property name="minimum">
           <double>-99.000000000000000</double>
@@ -883,7 +883,7 @@
        <item row="2" column="2">
         <widget class="QDoubleSpinBox" name="dc_reward_lineEdit">
          <property name="text" stdset="0">
-          <string>1.00</string>
+          <string>1,00</string>
          </property>
          <property name="minimum">
           <double>-99.000000000000000</double>
@@ -903,7 +903,7 @@
        <item row="2" column="1">
         <widget class="QDoubleSpinBox" name="dd_reward_lineEdit">
          <property name="text" stdset="0">
-          <string>1.00</string>
+          <string>1,00</string>
          </property>
          <property name="minimum">
           <double>-99.000000000000000</double>
@@ -924,7 +924,7 @@ reward</string>
        <item row="1" column="1">
         <widget class="QDoubleSpinBox" name="dd_penalty_lineEdit">
          <property name="text" stdset="0">
-          <string>-1.00</string>
+          <string>-1,00</string>
          </property>
          <property name="minimum">
           <double>-99.000000000000000</double>
@@ -944,7 +944,7 @@ reward</string>
        <item row="3" column="1">
         <widget class="QDoubleSpinBox" name="cd_reward_lineEdit">
          <property name="text" stdset="0">
-          <string>1.00</string>
+          <string>1,00</string>
          </property>
          <property name="minimum">
           <double>-99.000000000000000</double>
@@ -957,7 +957,7 @@ reward</string>
        <item row="3" column="2">
         <widget class="QDoubleSpinBox" name="cc_penalty_lineEdit">
          <property name="text" stdset="0">
-          <string>-1.00</string>
+          <string>-1,00</string>
          </property>
          <property name="minimum">
           <double>-99.000000000000000</double>
@@ -1038,7 +1038,7 @@ reward</string>
       <rect>
        <x>0</x>
        <y>20</y>
-       <width>361</width>
+       <width>372</width>
        <height>341</height>
       </rect>
      </property>
@@ -1262,8 +1262,8 @@ reward</string>
       <rect>
        <x>5</x>
        <y>20</y>
-       <width>131</width>
-       <height>22</height>
+       <width>132</width>
+       <height>28</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout_3">
@@ -1298,7 +1298,7 @@ reward</string>
          </size>
         </property>
         <property name="text" stdset="0">
-         <string>1.000</string>
+         <string>1,000</string>
         </property>
         <property name="decimals">
          <number>3</number>
@@ -1344,7 +1344,7 @@ reward</string>
        <x>0</x>
        <y>20</y>
        <width>141</width>
-       <height>22</height>
+       <height>27</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout_4">
@@ -1400,7 +1400,7 @@ reward</string>
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
         </property>
         <property name="text" stdset="0">
-         <string>0.00</string>
+         <string>0,00</string>
         </property>
         <property name="minimum">
          <double>-99.000000000000000</double>
