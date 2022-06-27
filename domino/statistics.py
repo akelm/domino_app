@@ -32,7 +32,7 @@ def statistics_single(history: List[CurrentState]):
             #     [-1, 3, 3])
             # f_C_corr = np.all(view == pattern_c, axis=(1, 2)).sum() / current.states.size
 
-            f_C_corr = np.max([(cs * current.states).sum()/current.states.sum() for cs in correct_solutions])
+            f_C_corr = np.max([(cs * current.states).sum()/cs.sum() for cs in correct_solutions])
 
             av_SUM = current.payoff.sum() / current.payoff.size / 8
             f_allC = (current.strategies == strategies_str.index('allC')).sum() / current.strategies.size
