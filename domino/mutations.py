@@ -42,9 +42,15 @@ def mutation(state_arr: np.ndarray, strat_arr, params):
     view: np.ndarray = sliding_window_view(
         np.pad(state_mutated, 1, constant_values=0), (3, 3)).reshape(
         [-1, 9])
+    # all 0  mutation
     all_zeros = (view.sum(axis=0) == 0)
     state_zeros_mutated = state_mutated.copy()
     state_zeros_mutated.flat[all_zeros] = calc_mappings.rng.uniform(0, 1, all_zeros.size) < params.p_0_neigh
+    # all 1  mutation
+    p_1_neigh = 0
+    all_ones = (view.sum(axis=0) == 9)
+    state_ones_mutated = state_zeros_mutated.copy()
+    state_ones_mutated.flat[all_ones] = calc_mappings.rng.uniform(0, 1, all_zeros.size) < p_1_neigh
 
     prob_arr: np.ndarray = np.random.uniform(0, 1, strat_arr.size).reshape(strat_arr.shape)
     mask = prob_arr < params.p_strat_mut
@@ -54,4 +60,4 @@ def mutation(state_arr: np.ndarray, strat_arr, params):
     log_mutation()
     log_state()
     log_strategy()
-    return state_zeros_mutated, new_strat_arr
+    return state_ones_mutated, new_strat_arr

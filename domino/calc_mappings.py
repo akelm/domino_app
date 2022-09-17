@@ -62,7 +62,7 @@ neigh_flat_reverse = np.vectorize(neigh_list_flat.index)
 
 strategies_str: List[str]
 strategies_str, strategies_fun = zip(
-    *(((str(k) + key), partial(fun, k)) for key, fun in zip(('D', 'C', 'DC'), (k_d, k_c, k_dc)) for k in range(8)))
+    *(((str(k) + key), partial(fun, k)) for key, fun in zip(('D', 'C', 'DC'), (k_d, k_c, k_dc)) for k in range(9)))
 strategies_str += ('allD', 'allC')
 strategies_str_lower = tuple(map(str.lower, strategies_str))
 strategies_fun += (all_d, all_c)

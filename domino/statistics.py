@@ -28,11 +28,11 @@ def statistics_single(history: List[CurrentState]):
         correct_solutions = calc_mappings.correct_solutions(*history[0].states.shape)
         for ind, previous, current in zip(range(len(history)), [history[0]] + history[:-1], history):
             f_C = current.states.sum() / current.states.size
-            # view: np.ndarray = sliding_window_view(np.pad(current.states, 1), (3, 3)).reshape(
-            #     [-1, 3, 3])
-            # f_C_corr = np.all(view == pattern_c, axis=(1, 2)).sum() / current.states.size
+            view: np.ndarray = sliding_window_view(np.pad(current.states, 1), (3, 3)).reshape(
+                [-1, 3, 3])
+            f_C_corr = np.all(view == pattern_c, axis=(1, 2)).sum() / current.states.size
 
-            f_C_corr = np.max([(cs * current.states).sum()/cs.sum() for cs in correct_solutions])
+            # f_C_corr = np.max([(cs * current.states).sum()/cs.sum() for cs in correct_solutions])
 
             av_SUM = current.payoff.sum() / current.payoff.size / 8
             f_allC = (current.strategies == strategies_str.index('allC')).sum() / current.strategies.size
