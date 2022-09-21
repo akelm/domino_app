@@ -39,9 +39,18 @@ def initialize(params):
         else:
             # k var
             k_spread = params.k_var_1 - params.k_var_0 + 1
-            steps: list = list(accumulate([0, params.all_c, params.all_d] + [params.k_d / k_spread] * k_spread + [
-                params.k_c / k_spread] * k_spread + [params.k_dc / k_spread] * k_spread))
-            spread_range = range(params.k_var_0, params.k_var_1 + 1)
+            steps: list = list(accumulate(
+                [0, params.all_c, params.all_d]
+                + [params.k_d / k_spread] * k_spread
+                + [params.k_c / k_spread] * k_spread
+                + [params.k_dc / k_spread] * k_spread)
+            )
+            spread_range = range(params.k_var_0, params.k_var_1)
+            if not spread_range:
+                range(0, 1)
+
+            print('spread_range=%s\n' % str(spread_range))
+
             labels = ['allC', 'allD'] + ['%dD' % k for k in spread_range] + \
                      ['%dC' % k for k in spread_range] + \
                      ['%dDC' % k for k in spread_range]

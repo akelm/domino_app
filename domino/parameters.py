@@ -9,6 +9,7 @@ from domino.calc_mappings import debug_loc
 
 
 class CompetitionType:
+    window = 2
     proportional = 1
     tournament = 0
 
@@ -24,7 +25,7 @@ class Parameters:
     ncols: int = 20
     p_init_c: float = 0.5
     sharing: int = False
-    competition_type: int = CompetitionType.tournament
+    competition_type: int = CompetitionType.proportional
     p_state_mut: float = 0
     p_strat_mut: float = 0
     p_0_neigh: float = 0
@@ -49,7 +50,7 @@ class Parameters:
     k_change: int = KType.constant
     k_const: int = 4
     k_var_0: int = 0
-    k_var_1: int = 7
+    k_var_1: int = 8
 
     species: int = 1
     synchronization: float = 1

@@ -75,10 +75,8 @@ strategy_mutation_str = {
     'allD': ['allC']
 }
 strategy_mutation_str.update({str(k) + key: ['allC', 'allD'] for k, key in enumerate(('D',) * 8)})
-strategy_mutation_str.update(
-    {str(k) + key: ['allC', 'allD', str(k) + 'D', str(k) + 'DC'] for k, key in enumerate(('C',) * 8)})
-strategy_mutation_str.update(
-    {str(k) + key: ['allC', 'allD', str(k) + 'D', str(k) + 'C'] for k, key in enumerate(('DC',) * 8)})
+strategy_mutation_str.update({str(k) + key: ['allC', 'allD', str(k) + 'D', str(k) + 'DC'] for k, key in enumerate(('C',) * 8)})
+strategy_mutation_str.update({str(k) + key: ['allC', 'allD', str(k) + 'D', str(k) + 'C'] for k, key in enumerate(('DC',) * 8)})
 
 strategy_mutation_dict = {strategies_str.index(key): list(map(strategies_str.index, value)) for key, value in
                           strategy_mutation_str.items()}

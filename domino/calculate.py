@@ -6,6 +6,7 @@ from copy import deepcopy
 from dataclasses import asdict
 from pprint import pformat
 
+from domino.plotting import state_to_img, history_to_img
 from .calc_mappings import strat_filename, state_filename, debug_loc
 from .add_log_level import addLoggingLevel
 from .sliding_window import sliding_window_view
@@ -31,7 +32,6 @@ from .mutations import mutation
 from .parameters import Parameters, CompetitionType, KType
 from .payoff import payoff_table
 
-from .plotting import history_to_img
 from .statistics import statistics_single, multirun_statistics
 
 
@@ -51,36 +51,77 @@ def log_finish():
     logging.custom((" CALCULATIONS FINISHED ").center(80, "*"))
     logging.custom("\n")
 
-def calc(params: Parameters):
-    def log_params():
-        logging.custom(" PARAMETERS ".center(80, "#"))
-        logging.custom("\n")
-        logging.custom(pformat(asdict(params)))
+class Experiment:
+    def __init__(self, index: int):
+        self.index = index
 
-    log_params()
+        self.history = []
+        self.stats = []
+class Calculator:
+    def __init__(self, params: Parameters):
+        self.params = params
+        self.experiments = []
 
-    calc_mappings.rng = np.random.default_rng(params.seed)
-    stats = []
-    shutil.rmtree('img', ignore_errors=True)
-    os.makedirs("img", exist_ok=True)
-    shutil.rmtree(calc_mappings.results_loc, ignore_errors=True)
-    shutil.rmtree(calc_mappings.std_results_loc, ignore_errors=True)
-    for exp_num in range(params.num_of_exper):
-        log_exper(exp_num)
-        current = initialize(params)
-        history = [deepcopy(current)]
-        for iteration in range(params.num_of_iter):
-            log_iter(iteration)
-            logging.debug("iteration %d in calc.py" % iteration)
-            current = iterate(current, params)
-            history.append(deepcopy(current))
-        logging.debug("finished iterations in calc.py")
-        stats.append(statistics_single(history))
-        logging.debug("statistics finished in calc.py")
-        history_to_img(history, exp_num)
+
+    def calc(self):
+        def log_params():
+            logging.custom(" PARAMETERS ".center(80, "#"))
+            logging.custom("\n")
+            logging.custom(pformat(asdict(self.params)))
+    
+        log_params()
+    
+        calc_mappings.rng = np.random.default_rng(self.params.seed)
+        self.cleanup()
+
+        for exp_num in range(self.params.num_of_exper):
+            experiment = Experiment(exp_num)
+
+            log_exper(exp_num)
+
+            current = initialize(self.params)
+            experiment.history = [deepcopy(current)]
+
+            for iteration in range(self.params.num_of_iter):
+                log_iter(iteration)
+                logging.debug("iteration %d in calc.py" % iteration)
+                current = iterate(current, self.params)
+                experiment.history.append(deepcopy(current))
+            logging.debug("finished iterations in calc.py")
+            experiment.stats.append(statistics_single(experiment.history))
+            logging.debug("statistics finished in calc.py")
+
+
+
+            self.experiments.append(experiment)
+
+    def cleanup(self):
+        stats = []
+        shutil.rmtree('img', ignore_errors=True)
+        os.makedirs("img", exist_ok=True)
+        shutil.rmtree(calc_mappings.results_loc, ignore_errors=True)
+        shutil.rmtree(calc_mappings.std_results_loc, ignore_errors=True)
+        return stats
+
+    def get_last_image(self):
+
+        experiment = self.experiments[-1]
+        state_to_img(experiment.history[-1], len(experiment.history)-1, experiment.index)
+
+        pass
+
+    def save_images(self):
+        for experiment in self.experiments:
+            history_to_img(experiment.history, experiment.index)
+
         logging.debug("plotting finished in calc.py")
-    multirun_statistics(stats)
-    log_finish()
+
+    def multirun_stats(self):
+        for experiment in self.experiments:
+            multirun_statistics(experiment.stats)
+
+    def finish(self):
+        log_finish()
 
 
 def new_state_array(state_arr, strat_arr):
