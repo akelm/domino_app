@@ -2,15 +2,18 @@ import logging
 import os.path
 import sys
 
-from PyQt5 import QtWidgets
+from PIL import Image
+from PIL.ImageQt import ImageQt
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QSpinBox, QComboBox, QLabel
 from PyQt5.uic import loadUi
 
+from domino.plotting import state_to_ram
 from domino.add_log_level import addLoggingLevel
 from .calc_mappings import img_file_pattern, img_file_labels, debug_loc
-from .calculate import calc
+from .calculate import Calculator
 from .parameters import Parameters
 from .params_mapping import getters
 
@@ -34,16 +37,20 @@ class State:
 
 class Worker(QObject):
     finished = pyqtSignal()
+    image_ready = pyqtSignal()
     progress = pyqtSignal(int)
 
     def __init__(self, params):
         super().__init__()
         self.params = params
+        self.result = None
 
     def run(self):
         """Long-running task."""
-        calc(self.params)
-        logging.debug("calc finished")
+        c = Calculator(self.params)
+        c.calc()
+        c.multirun_stats()
+        self.result = c.experiments
         self.finished.emit()
 
 
@@ -73,6 +80,9 @@ class UserInterface(QtWidgets.QMainWindow):
         self.state = State.stopped
         self.num_iter = 0
         self.num_exper = 0
+
+        self.experiments = None
+
         self.show()
 
     def set_debug_btn(self):
@@ -154,15 +164,22 @@ class UserInterface(QtWidgets.QMainWindow):
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
-        # self.worker.progress.connect(self.reportProgress)
+        self.worker.progress.connect(self.reportProgress)
         # Step 6: Start the thread
         self.thread.start()
         self.thread.finished.connect(
             self.on_stop_calc
         )
 
+    def reportProgress(self):
+        iter_num = self.spinBox_iter_step.setValue(self.num_iter)
+        exper_num = self.spinBox_exp_no.setValue(self.num_exper)
+        self.change_img()
+
     def on_stop_calc(self):
         self.state = State.stopped
+        self.experiments = self.worker.result
+
         self.start_pushButton.setEnabled(True)
 
         self.spinBox_iter_step.setEnabled(True)
@@ -178,10 +195,20 @@ class UserInterface(QtWidgets.QMainWindow):
         self.comboBox_states: QComboBox
         disp_state = self.comboBox_states.currentIndex()
 
-        if 0 <= iter_num <= self.num_iter and 0 < exper_num <= self.num_exper and 0 <= disp_state < len(
-                img_file_labels):
-            img_file = img_file_pattern % (exper_num, img_file_labels[disp_state], iter_num)
-            pixmap = QPixmap(img_file)
+        if 0 <= iter_num <= self.num_iter and 0 < exper_num <= self.num_exper and 0 <= disp_state < len(img_file_labels):
+            # img_file = img_file_pattern % (exper_num, img_file_labels[disp_state], iter_num)
+            # pixmap = QPixmap(img_file)
+
+            experiment = self.experiments[exper_num-1]
+            state = experiment.history[iter_num]
+            label = img_file_labels[disp_state]
+            img_data = state_to_ram(state, label)
+
+            img = Image.open(img_data)
+            img_qt = ImageQt(img)
+
+            pixmap = QtGui.QPixmap.fromImage(img_qt)
+
             self.plot_label.setPixmap(pixmap)
             self.plot_label.show()
 

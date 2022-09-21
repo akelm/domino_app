@@ -47,9 +47,7 @@ def payoff_table(state_arr, params):
     payoff_d_list = []
     ones_d_list = []
     for pattern in (pattern_d2a, pattern_d2b, pattern_d4):
-        num_correct_d = np.logical_not(
-            np.logical_or(view[d_inds, :, :], pattern)
-        ).sum(axis=1).sum(axis=1) - 1
+        num_correct_d = np.logical_not( np.logical_or(view[d_inds, :, :], pattern) ).sum(axis=1).sum(axis=1) - 1
         num_incorrect_d = np.logical_and(np.logical_not(view[d_inds, :, :]), pattern).sum(axis=1).sum(axis=1)
         num_correct_c = np.logical_and(view[d_inds, :, :], pattern).sum(axis=1).sum(axis=1)
         num_incorrect_c = 8 - num_correct_d - num_incorrect_d - num_correct_c

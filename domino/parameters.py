@@ -58,7 +58,7 @@ class Parameters:
     k_change: KType = KType.constant
     k_const: int = 4
     k_var_0: int = 0
-    k_var_1: int = 7
+    k_var_1: int = 8
 
     species: int = 1
     synchronization: float = 1
