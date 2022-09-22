@@ -3,9 +3,10 @@ from typing import List
 
 import numpy as np
 import pandas as pd
+from dataclasses import asdict
 
 from . import calc_mappings
-from .calc_mappings import CurrentState, strategies_str, pattern_c, results_loc, std_results_loc
+from .calc_mappings import CurrentState, strategies_str, pattern_c, results_loc, std_results_loc, results_loc_m
 from .sliding_window import sliding_window_view
 
 headers = "f_C f_C_corr av_SUM f_allC f_allD f_kD f_kC f_kDC f_strat_ch".split() + \
@@ -25,7 +26,7 @@ headers = "f_C f_C_corr av_SUM f_allC f_allD f_kD f_kC f_kDC f_strat_ch".split()
 def statistics_single(history: List[CurrentState]):
     if history:
         df = pd.DataFrame(np.nan, index=list(range(len(history))), columns=headers)
-        correct_solutions = calc_mappings.correct_solutions(*history[0].states.shape)
+        # correct_solutions = calc_mappings.correct_solutions(*history[0].states.shape)
         for ind, previous, current in zip(range(len(history)), [history[0]] + history[:-1], history):
             f_C = current.states.sum() / current.states.size
             view: np.ndarray = sliding_window_view(np.pad(current.states, 1), (3, 3)).reshape(
@@ -63,20 +64,24 @@ cols_av = ["av_" + s for s in cols_multirun]
 cols_std = ["std_" + s for s in cols_multirun]
 cols_merged = list(chain.from_iterable(zip(cols_av, cols_std)))
 
-
-def multirun_statistics(stats: List[pd.DataFrame]):
+def multirun_statistics(stats: List[pd.DataFrame], params):
     if stats:
-        with open(results_loc, 'w') as file:
+        len_st_gt_1 = len(stats) > 1
+        res_file = results_loc_m if len_st_gt_1 else results_loc
+        with open(res_file, 'w') as file:
+            file.write(
+                "# " + repr(asdict(params)).replace("}", "").replace("{", "").replace(",", "\n#")+"\n\n"
+            )
             single_df: pd.DataFrame
             for idx, single_df in enumerate(stats):
                 file.write("# EXPERIMENT %d\n" % (idx+1))
-                single_df.to_csv(file, mode='a',  sep='\t', float_format="%0.3f", index_label="iter", line_terminator="\n")
+                single_df.to_csv(file, mode='a',  sep='\t', float_format="%0.3f", index_label="#iter", line_terminator="\n"*3)
                 file.write("\n\n")
-
-        common_array = np.stack([df[cols_multirun].values for df in stats], axis=2)
-        df = pd.DataFrame(np.nan, index=list(range(common_array.shape[0])), columns=cols_merged)
-        df[cols_av] = common_array.mean(axis=2)
-        df[cols_std] = common_array.std(axis=2)
-        filename = std_results_loc
-
-        df.to_csv(filename, sep='\t', float_format="%0.3f", index_label="iter")
+        if len_st_gt_1:
+            with open(std_results_loc, 'w') as file:
+                file.write("# " + repr(asdict(params)).replace("}", "").replace("{", "").replace(",", "\n#") + "\n"*3)
+                common_array = np.stack([df[cols_multirun].values for df in stats], axis=2)
+                df = pd.DataFrame(np.nan, index=list(range(common_array.shape[0])), columns=cols_merged)
+                df[cols_av] = common_array.mean(axis=2)
+                df[cols_std] = common_array.std(axis=2)
+                df.to_csv(file, mode='a', sep='\t', float_format="%0.3f", index_label="#iter")

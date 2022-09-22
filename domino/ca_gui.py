@@ -8,21 +8,24 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QSpinBox, QComboBox, QLabel
 from PyQt5.uic import loadUi
 
-from .add_log_level import addLoggingLevel
+from domino.add_log_level import addLoggingLevel
 from .calc_mappings import img_file_pattern, img_file_labels, debug_loc
 from .calculate import calc
 from .parameters import Parameters
 from .params_mapping import getters
 
-try:
-    addLoggingLevel("custom", 49, methodName="custom")
-    # logging.basicConfig(filename=debug_loc, level="custom", format="%(message)s", filemode='w')
-except AttributeError:
-    pass
-
+logger = logging.getLogger('custom')
+logger.propagate = False
+logger.setLevel(logging.DEBUG)
+fh = logging.FileHandler(debug_loc)
+fh.setLevel(logging.DEBUG)
+# create formatter and add it to the handlers
+formatter = logging.Formatter("%(message)s")
+fh.setFormatter(formatter)
+# add the handlers to logger
+logger.addHandler(fh)
 script_dir = os.path.dirname(__file__)
 gui_xml = os.path.join(script_dir,  "untitled.ui")
-# logging.basicConfig(filename='debug_tmp.txt', level=logging.DEBUG ,filemode='w')
 
 class State:
     stopped = 0

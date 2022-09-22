@@ -7,7 +7,7 @@ import pandas as pd
 from . import calc_mappings
 from .calc_mappings import strategy_mutation_dict
 from .sliding_window import sliding_window_view
-
+logger = logging.getLogger('custom')
 
 def mutation(state_arr: np.ndarray, strat_arr, params):
     def log_mutation():
@@ -23,16 +23,16 @@ def mutation(state_arr: np.ndarray, strat_arr, params):
             "strat_mut": calc_mappings.strat_translate(new_strat_arr.flat),
         })
 
-        logging.custom(" STATE MUTATION ".center(80, "#"))
-        logging.custom(df.to_string(index=False))
+        logger.debug(" STATE MUTATION ".center(80, "#"))
+        logger.debug(df.to_string(index=False))
 
     def log_strategy():
-        logging.custom(" MUTATED STRATEGY ".center(80, "#"))
-        logging.custom(pd.DataFrame(calc_mappings.strat_translate(new_strat_arr)).to_string(index=False, header=False))
+        logger.debug(" MUTATED STRATEGY ".center(80, "#"))
+        logger.debug(pd.DataFrame(calc_mappings.strat_translate(new_strat_arr)).to_string(index=False, header=False))
 
     def log_state():
-        logging.custom(" MUTATED STATE ".center(80, "#"))
-        logging.custom(pd.DataFrame(state_zeros_mutated).to_string(index=False, header=False))
+        logger.debug(" MUTATED STATE ".center(80, "#"))
+        logger.debug(pd.DataFrame(state_zeros_mutated).to_string(index=False, header=False))
 
     # normal state mutation
     prob_arr: np.ndarray = calc_mappings.rng.uniform(0, 1, state_arr.size).reshape(state_arr.shape)
@@ -57,7 +57,8 @@ def mutation(state_arr: np.ndarray, strat_arr, params):
     rand_choice = partial(np.random.choice, size=1)
     new_strat_arr = strat_arr.copy()
     new_strat_arr[mask].flat = list(map(rand_choice, map(strategy_mutation_dict.get, new_strat_arr[mask].flat)))
-    log_mutation()
-    log_state()
-    log_strategy()
+    if params.log_to_debug:
+        log_mutation()
+        log_state()
+        log_strategy()
     return state_ones_mutated, new_strat_arr

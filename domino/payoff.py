@@ -5,7 +5,7 @@ import pandas as pd
 
 from .calc_mappings import pattern_d2a, pattern_d2b, pattern_d4, neigh_list
 from .sliding_window import sliding_window_view
-
+logger = logging.getLogger('custom')
 
 def payoff_table(state_arr, params):
     def log_payoff():
@@ -32,12 +32,12 @@ def payoff_table(state_arr, params):
             df[col_pay][d_inds] = pay
             df[col_ones][d_inds] = ones
 
-        logging.custom(" CALCULATE PAYOFF ".center(80, "#"))
-        logging.custom(df.to_string(index=False))
+        logger.debug(" CALCULATE PAYOFF ".center(80, "#"))
+        logger.debug(df.to_string(index=False))
 
     def log_payoff_table():
-        logging.custom(" PAYOFF ARRAY ".center(80, "#"))
-        logging.custom(pd.DataFrame(payoff_array).to_string(index=False, header=False))
+        logger.debug(" PAYOFF ARRAY ".center(80, "#"))
+        logger.debug(pd.DataFrame(payoff_array).to_string(index=False, header=False))
 
     view: np.ndarray = sliding_window_view(np.pad(state_arr, 1), (3, 3)).reshape(
         [-1, 3, 3])
@@ -70,7 +70,7 @@ def payoff_table(state_arr, params):
         view: np.ndarray = sliding_window_view(np.pad(payoff_array, 1), (3, 3)).reshape(
             [-1, 9])
         payoff_array = view.mean(axis=1).reshape(state_arr.shape)
-
-    log_payoff()
-    log_payoff_table()
+    if params.log_to_debug:
+        log_payoff()
+        log_payoff_table()
     return payoff_array

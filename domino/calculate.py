@@ -6,15 +6,10 @@ from copy import deepcopy
 from dataclasses import asdict
 from pprint import pformat
 
-from .calc_mappings import strat_filename, state_filename, debug_loc
-from .add_log_level import addLoggingLevel
+from .calc_mappings import strat_filename, state_filename
 from .sliding_window import sliding_window_view
 
-try:
-    addLoggingLevel("custom", 49, methodName="custom")
-    # logging.basicConfig(filename=debug_loc, level="custom", format="%(message)s", filemode='w')
-except AttributeError:
-    pass
+logger = logging.getLogger('custom')
 
 import pandas as pd
 
@@ -36,28 +31,29 @@ from .statistics import statistics_single, multirun_statistics
 
 
 def log_iter(i: int):
-    logging.custom("\n\n")
-    logging.custom((" ITERATION %d " % (i + 1)).center(80, "*"))
-    logging.custom("\n")
+    logger.debug("\n\n")
+    logger.debug((" ITERATION %d " % (i + 1)).center(80, "*"))
+    logger.debug("\n")
 
 
 def log_exper(i: int):
-    logging.custom("\n\n")
-    logging.custom((" EXPERIMENT %d " % (i + 1)).center(80, "*"))
-    logging.custom("\n")
+    logger.debug("\n\n")
+    logger.debug((" EXPERIMENT %d " % (i + 1)).center(80, "*"))
+    logger.debug("\n")
 
 def log_finish():
-    logging.custom("\n\n")
-    logging.custom((" CALCULATIONS FINISHED ").center(80, "*"))
-    logging.custom("\n")
+    logger.debug("\n\n")
+    logger.debug((" CALCULATIONS FINISHED ").center(80, "*"))
+    logger.debug("\n")
 
 def calc(params: Parameters):
     def log_params():
-        logging.custom(" PARAMETERS ".center(80, "#"))
-        logging.custom("\n")
-        logging.custom(pformat(asdict(params)))
+        logger.debug(" PARAMETERS ".center(80, "#"))
+        logger.debug("\n")
+        logger.debug(pformat(asdict(params)))
 
-    log_params()
+    if params.log_to_debug:
+        log_params()
 
     calc_mappings.rng = np.random.default_rng(params.seed)
     stats = []
@@ -66,11 +62,13 @@ def calc(params: Parameters):
     shutil.rmtree(calc_mappings.results_loc, ignore_errors=True)
     shutil.rmtree(calc_mappings.std_results_loc, ignore_errors=True)
     for exp_num in range(params.num_of_exper):
-        log_exper(exp_num)
+        if params.log_to_debug:
+            log_exper(exp_num)
         current = initialize(params)
         history = [deepcopy(current)]
         for iteration in range(params.num_of_iter):
-            log_iter(iteration)
+            if params.log_to_debug:
+                log_iter(iteration)
             logging.debug("iteration %d in calc.py" % iteration)
             current = iterate(current, params)
             history.append(deepcopy(current))
@@ -79,11 +77,12 @@ def calc(params: Parameters):
         logging.debug("statistics finished in calc.py")
         history_to_img(history, exp_num)
         logging.debug("plotting finished in calc.py")
-    multirun_statistics(stats)
-    log_finish()
+    multirun_statistics(stats, params)
+    if params.log_to_debug:
+        log_finish()
 
 
-def new_state_array(state_arr, strat_arr):
+def new_state_array(state_arr, strat_arr, params):
     def log_new_states():
         df = pd.DataFrame({
             "idx": np.arange(state_arr.size) + 1,
@@ -95,12 +94,12 @@ def new_state_array(state_arr, strat_arr):
             "num0": 8 - num_c,
             "new_state": new_states.flat
         })
-        logging.custom(" CHANGE STATE ".center(80, "#"))
-        logging.custom(df.to_string(index=False))
+        logger.debug(" CHANGE STATE ".center(80, "#"))
+        logger.debug(df.to_string(index=False))
 
     def log_state_arr():
-        logging.custom(" STATE ARRAY ".center(80, "#"))
-        logging.custom(pd.DataFrame(new_states).to_string(index=False, header=False))
+        logger.debug(" STATE ARRAY ".center(80, "#"))
+        logger.debug(pd.DataFrame(new_states).to_string(index=False, header=False))
 
     view: np.ndarray = sliding_window_view(np.pad(state_arr, 1), (3, 3)).reshape(
         [-1, 3, 3])
@@ -108,19 +107,19 @@ def new_state_array(state_arr, strat_arr):
     num_c = np.logical_and(np.logical_not(calc_mappings.pattern_c), view).sum(axis=(1, 2))
     function_mapping = map(calc_mappings.strategies_fun.__getitem__, strat_arr.reshape([-1]))
     new_states = np.array([f(x) for f, x in zip(function_mapping, num_c)]).reshape(state_arr.shape)
-
-    log_new_states()
-    log_state_arr()
+    if params.log_to_debug:
+        log_new_states()
+        log_state_arr()
     return new_states
 
 
 def iterate(current, params):
     # change state
-    new_states = new_state_array(current.states, current.strategies)
+    new_states = new_state_array(current.states, current.strategies, params)
 
     # change strategies with competition
     new_strat = change_strategy(current.payoff, current.strategies, params.synchronization, params.competition_type,
-                                params.min_payoff)
+                                params.min_payoff, params)
 
     # payoff  with opt sharing
     new_payoff = payoff_table(new_states, params)

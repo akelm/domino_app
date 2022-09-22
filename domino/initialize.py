@@ -7,17 +7,18 @@ import pandas as pd
 from .calc_mappings import CurrentState, strategies_str, strat_translate, strat_to_ind
 from .parameters import KType
 from .payoff import payoff_table
+logger = logging.getLogger('custom')
 
 
 def initialize(params):
     def log_initialize():
-        logging.custom("\n\n")
-        logging.custom(" INITIALIZE ".center(80, "*"))
-        logging.custom("\n")
-        logging.custom(" STATE ARRAY ".center(80, "#"))
-        logging.custom(pd.DataFrame(state_array).to_string(index=False, header=False))
-        logging.custom(" STRATEGY ARRAY ".center(80, "#"))
-        logging.custom(pd.DataFrame(strat_translate(strat_array)).to_string(index=False, header=False))
+        logger.debug("\n\n")
+        logger.debug(" INITIALIZE ".center(80, "*"))
+        logger.debug("\n")
+        logger.debug(" STATE ARRAY ".center(80, "#"))
+        logger.debug(pd.DataFrame(state_array).to_string(index=False, header=False))
+        logger.debug(" STRATEGY ARRAY ".center(80, "#"))
+        logger.debug(pd.DataFrame(strat_translate(strat_array)).to_string(index=False, header=False))
 
     if params.ca_state is not None:
         state_array = params.ca_state
@@ -52,7 +53,8 @@ def initialize(params):
             strat_array[(lower < strat_array) & (strat_array <= higher)] = strategies_str.index(label)
         strat_array = strat_array.astype(int)
 
-    log_initialize()
+    if params.log_to_debug:
+        log_initialize()
 
     payoff_array = payoff_table(state_array, params)
 

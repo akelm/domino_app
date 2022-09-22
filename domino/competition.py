@@ -6,9 +6,9 @@ import pandas as pd
 from . import calc_mappings
 from .parameters import CompetitionType
 from .sliding_window import sliding_window_view
+logger = logging.getLogger('custom')
 
-
-def change_strategy(payoff_arr, strat_arr, sync_prob, competition_type=None, min_payoff=0):
+def change_strategy(payoff_arr, strat_arr, sync_prob, competition_type, min_payoff, params):
     def log_change_strategy():
         view_payoff: np.ndarray = sliding_window_view(
             np.pad(payoff_arr.astype(str), 1, constant_values="_"), (3, 3)).reshape(
@@ -31,12 +31,12 @@ def change_strategy(payoff_arr, strat_arr, sync_prob, competition_type=None, min
 
         })
         df["win_idx"] = (selected_ind // 3 - 1) * strat_arr.shape[0] + (selected_ind % 3 - 1) + df["idx"]
-        logging.custom(" CHANGE STRATEGY ".center(80, "#"))
-        logging.custom(df.to_string(index=False))
+        logger.debug(" CHANGE STRATEGY ".center(80, "#"))
+        logger.debug(df.to_string(index=False))
 
     def log_strategy():
-        logging.custom(" STRATEGY ARRAY ".center(80, "#"))
-        logging.custom(
+        logger.debug(" STRATEGY ARRAY ".center(80, "#"))
+        logger.debug(
             pd.DataFrame(calc_mappings.strat_translate(new_strat.reshape(strat_arr.shape))).to_string(index=False,
                                                                                                       header=False))
 
@@ -85,7 +85,7 @@ def change_strategy(payoff_arr, strat_arr, sync_prob, competition_type=None, min
         [-1, 9])
     new_strat = view[np.arange(selected_ind.size), selected_ind]
 
-
-    log_change_strategy()
-    log_strategy()
+    if params.log_to_debug:
+        log_change_strategy()
+        log_strategy()
     return new_strat.reshape(strat_arr.shape)
