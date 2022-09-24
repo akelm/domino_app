@@ -122,7 +122,7 @@ for frame in stack:
 
 root_dir = os.path.dirname(top_pyw[0] if top_pyw else lowest_py)
 img_file_pattern = os.path.join(root_dir, 'img' , "exp_%d_%s_%d.png")
-img_file_labels = ('state', 'strategy', "payoff")
+img_file_labels = ('state', 'strategy', "payoff", "kD", "kC", "kDC")
 debug_loc = os.path.join(root_dir, "debug.txt")
 state_filename = os.path.join(root_dir, "CA_STATE.txt")
 strat_filename = os.path.join(root_dir, "CA_STRATEGIES.txt")

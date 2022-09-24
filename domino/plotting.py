@@ -43,10 +43,10 @@ def state_to_ram(state, label):
 
     if label == "state":
         arr = state.states
-    elif label == "strategy":
-        arr = state.strategies
-    else: #if label == "payoff":
+    elif label == "payoff":
         arr = state.payoff
+    else:
+        arr = state.strategies
 
     ims = ax.imshow(arr, cmap=colormaps_dict[label], vmax=vmax_dict[label], vmin=vmin_dict[label])
     if colorbar_dict[label]:
