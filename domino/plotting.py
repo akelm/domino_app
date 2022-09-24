@@ -22,7 +22,7 @@ def history_to_img(history, exper_num):
     #         executor.submit(self.state_to_img, current, ind, exper_num)
 
     for ind, current in enumerate(history):
-        print("saving: " + ind.__str__())
+        # print("saving: " + ind.__str__())
         state_to_img(current, ind, exper_num)
 
 def state_to_ram(state, label):
@@ -72,7 +72,7 @@ def state_to_ram(state, label):
     return buffer
 
 def state_to_img(current, ind, exper_num):
-    start = time.perf_counter()
+    # start = time.perf_counter()
 
     for label in img_file_labels:
 
@@ -81,6 +81,6 @@ def state_to_img(current, ind, exper_num):
 
         with open(filename, 'wb') as outfile:
             outfile.write(buff.getbuffer().tobytes())
-
-    end = time.perf_counter()
-    print(f'Finished {ind} in {round(end - start, 2)}')
+    #
+    # end = time.perf_counter()
+    # print(f'Finished {ind} in {round(end - start, 2)}')

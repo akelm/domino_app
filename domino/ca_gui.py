@@ -10,7 +10,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QSpinBox, QComboBox, QLabel
 from PyQt5.uic import loadUi
 
-from domino.plotting import state_to_ram, history_to_img
+from domino.plotting import state_to_ram, history_to_img, state_to_img
 from .add_log_level import addLoggingLevel
 from domino.plotting import state_to_ram
 from domino.add_log_level import addLoggingLevel
@@ -36,10 +36,30 @@ class State:
     stopped = 0
     running = 1
 
-
-class Worker(QObject):
+"""
+PicsWorker thread
+"""
+class PicsWorker(QObject):
     finished = pyqtSignal()
-    image_ready = pyqtSignal()
+    progress = pyqtSignal(int,int)
+
+    def __init__(self, experiments):
+        super().__init__()
+        self.experiments: list[Experiment]
+        self.experiments = experiments
+
+    def run(self):
+        for exper_num,ex in enumerate(self.experiments):
+            for ind, current in enumerate(ex.history):
+                self.progress.emit(exper_num, ind)
+                state_to_img(current, ind, exper_num)
+        self.finished.emit()
+
+"""
+CalculationWorker thread
+"""
+class CalculationWorker(QObject):
+    finished = pyqtSignal()
     progress = pyqtSignal(int)
 
     def __init__(self, params):
@@ -59,6 +79,12 @@ class Worker(QObject):
 class UserInterface(QtWidgets.QMainWindow):
 
     def __init__(self):
+        self.pics_thread: QThread
+        self.pics_worker: PicsWorker
+
+        self.thread: QThread
+        self.pics_worker: CalculationWorker
+
         super(UserInterface, self).__init__()
         loadUi(gui_xml, self)
         self.setFixedSize(self.width(), self.height())
@@ -87,7 +113,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.num_iter = 0
         self.num_exper = 0
 
-        self.experiments: Experiment
+        self.experiments: list[Experiment]
         self.experiments = None
 
         self.show()
@@ -104,8 +130,46 @@ class UserInterface(QtWidgets.QMainWindow):
         sender.setText(rel_file)
 
     def save_pics(self):
-        for i,ex in enumerate(self.experiments):
-            history_to_img(ex.history, i)
+        self.start_pushButton.setEnabled(False)
+        self.pics_pushButton.setEnabled(False)
+
+        self.spinBox_iter_step.setEnabled(False)
+        self.spinBox_iter_step.setValue(0)
+        self.spinBox_exp_no.setEnabled(False)
+        self.spinBox_exp_no.setValue(1)
+
+        self.spinBox_iter_step.valueChanged.disconnect(self.change_img)
+        self.spinBox_exp_no.valueChanged.disconnect(self.change_img)
+
+        self.pics_thread = QThread()
+        self.pics_worker = PicsWorker(self.experiments)
+        self.pics_worker.moveToThread(self.pics_thread)
+        self.pics_thread.started.connect(self.pics_worker.run)
+        self.pics_worker.finished.connect(self.pics_thread.quit)
+        self.pics_worker.finished.connect(self.pics_worker.deleteLater)
+        self.pics_thread.finished.connect(self.pics_thread.deleteLater)
+        self.pics_worker.progress.connect(self.reportProgress_pics)
+        self.pics_thread.start()
+
+        self.pics_thread.finished.connect(self.on_stop_pics)
+
+    def reportProgress_pics(self, ex, ind):
+        self.spinBox_iter_step.setValue(ind)
+        self.spinBox_exp_no.setValue(ex+1)
+
+    def on_stop_pics(self):
+        self.state = State.stopped
+
+        self.start_pushButton.setEnabled(True)
+        self.pics_pushButton.setEnabled(True)
+
+        self.spinBox_iter_step.setEnabled(True)
+        self.spinBox_exp_no.setEnabled(True)
+
+        self.spinBox_iter_step.valueChanged.connect(self.change_img)
+        self.spinBox_exp_no.valueChanged.connect(self.change_img)
+
+        self.change_img()
 
     def start(self):
         if self.state == State.stopped:
@@ -169,7 +233,7 @@ class UserInterface(QtWidgets.QMainWindow):
         # Step 2: Create a QThread object
         self.thread = QThread()
         # Step 3: Create a worker object
-        self.worker = Worker(params)
+        self.worker = CalculationWorker(params)
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         self.thread.started.connect(self.worker.run)
@@ -183,7 +247,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.on_stop_calc
         )
 
-    def reportProgress(self):
+    def reportProgress(self, ex, ind):
         iter_num = self.spinBox_iter_step.setValue(self.num_iter)
         exper_num = self.spinBox_exp_no.setValue(self.num_exper)
         self.change_img()

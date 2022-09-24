@@ -63,8 +63,9 @@ class Calculator:
             logger.debug(" PARAMETERS ".center(80, "#"))
             logger.debug("\n")
             logger.debug(pformat(asdict(self.params)))
-    if params.log_to_debug:
-        log_params()
+
+        if self.params.log_to_debug:
+            log_params()
 
         calc_mappings.rng = np.random.default_rng(self.params.seed)
         self.cleanup()
@@ -72,22 +73,23 @@ class Calculator:
         for exp_num in range(self.params.num_of_exper):
             experiment = Experiment(exp_num)
 
-            if params.log_to_debug:log_exper(exp_num)
+            if self.params.log_to_debug:
+                log_exper(exp_num)
 
             current = initialize(self.params)
             experiment.history = [deepcopy(current)]
 
             for iteration in range(self.params.num_of_iter):
-            if params.log_to_debug:
-                log_iter(iteration)
-                logging.debug("iteration %d in calc.py" % iteration)
+                if self.params.log_to_debug:
+                    log_iter(iteration)
+                    logging.debug("iteration %d in calc.py" % iteration)
+
                 current = iterate(current, self.params)
                 experiment.history.append(deepcopy(current))
-            logging.debug("finished iterations in calc.py")
+
+            if self.params.log_to_debug: logging.debug("finished iterations in calc.py")
             experiment.stats.append(statistics_single(experiment.history))
-            logging.debug("statistics finished in calc.py")
-
-
+            if self.params.log_to_debug: logging.debug("statistics finished in calc.py")
 
             self.experiments.append(experiment)
 
@@ -98,13 +100,6 @@ class Calculator:
         shutil.rmtree(calc_mappings.results_loc, ignore_errors=True)
         shutil.rmtree(calc_mappings.std_results_loc, ignore_errors=True)
         return stats
-
-    def get_last_image(self):
-
-        experiment = self.experiments[-1]
-        state_to_img(experiment.history[-1], len(experiment.history)-1, experiment.index)
-
-        pass
 
     def save_images(self):
         for experiment in self.experiments:

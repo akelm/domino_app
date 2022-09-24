@@ -50,7 +50,7 @@ def initialize(params):
             if not spread_range:
                 range(0, 1)
 
-            print('spread_range=%s\n' % str(spread_range))
+            # print('spread_range=%s\n' % str(spread_range))
 
             labels = ['allC', 'allD'] + ['%dD' % k for k in spread_range] + \
                      ['%dC' % k for k in spread_range] + \
