@@ -22,6 +22,7 @@ def history_to_img(history, exper_num):
     #         executor.submit(self.state_to_img, current, ind, exper_num)
 
     for ind, current in enumerate(history):
+        print("saving: " + ind.__str__())
         state_to_img(current, ind, exper_num)
 
 def state_to_ram(state, label):
@@ -64,7 +65,7 @@ def state_to_ram(state, label):
     ax.invert_yaxis()
 
     buffer = BytesIO()
-    fig.savefig(buffer, bbox_inches='tight')
+    fig.savefig(buffer, bbox_inches='tight', format="png")
 
     plt.close(fig)
 
@@ -73,41 +74,13 @@ def state_to_ram(state, label):
 def state_to_img(current, ind, exper_num):
     start = time.perf_counter()
 
-    yticks_len, xticks_len = current.states.shape
-    xticks = np.arange(xticks_len + 1) - 0.5
-    yticks = np.arange(yticks_len + 1) - 0.5
-    xrange = xticks[0], xticks[-1]
-    yrange = yticks[0], yticks[-1]
+    for label in img_file_labels:
 
-    ax: plt.Axes
-    fig: plt.Figure
-    fig, ax = plt.subplots()
-
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes('right', size='10%', pad=0.15)
-
-    for label, arr in zip(img_file_labels, (current.states, current.strategies, current.payoff)):
-        ax.cla()
-        cax.cla()
-
-        ims = ax.imshow(arr, cmap=colormaps_dict[label], vmax=vmax_dict[label], vmin=vmin_dict[label])
-        if colorbar_dict[label]:
-            cbar = fig.colorbar(ims, cax=cax, orientation='vertical')
-            cbar.set_ticks(colorbar_ticks[label])
-            cbar.ax.set_yticklabels(colorbar_labels[label])
-
-        ax.set_xticks(xticks)
-        ax.set_yticks(yticks)
-        ax.grid(color='blue', linestyle='--', linewidth=0.5)
-        ax.set_xlim(*xrange)
-        ax.set_ylim(*yrange)
-        ax.set_yticklabels("")
-        ax.set_xticklabels("")
-        ax.invert_yaxis()
+        buff = state_to_ram(current, label)
         filename = img_file_pattern % (exper_num + 1, label, ind)
-        fig.savefig(filename, bbox_inches='tight')
 
-    plt.close(fig)
+        with open(filename, 'wb') as outfile:
+            outfile.write(buff.getbuffer().tobytes())
 
     end = time.perf_counter()
     print(f'Finished {ind} in {round(end - start, 2)}')

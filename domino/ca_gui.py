@@ -10,10 +10,12 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QPushButton, QFileDialog, QSpinBox, QComboBox, QLabel
 from PyQt5.uic import loadUi
 
+from domino.plotting import state_to_ram, history_to_img
+from .add_log_level import addLoggingLevel
 from domino.plotting import state_to_ram
 from domino.add_log_level import addLoggingLevel
 from .calc_mappings import img_file_pattern, img_file_labels, debug_loc
-from .calculate import Calculator
+from .calculate import Calculator, Experiment
 from .parameters import Parameters
 from .params_mapping import getters
 
@@ -62,6 +64,10 @@ class UserInterface(QtWidgets.QMainWindow):
         self.setFixedSize(self.width(), self.height())
         self.start_pushButton: QPushButton
         self.start_pushButton.clicked.connect(self.start)
+
+        self.pics_pushButton: QPushButton
+        self.pics_pushButton.clicked.connect(self.save_pics)
+
         self.readca_btn.clicked.connect(self.getfile)
         self.readstr_btn.clicked.connect(self.getfile)
         self.debug_checkBox.stateChanged.connect(self.set_debug_btn)
@@ -81,6 +87,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.num_iter = 0
         self.num_exper = 0
 
+        self.experiments: Experiment
         self.experiments = None
 
         self.show()
@@ -95,6 +102,10 @@ class UserInterface(QtWidgets.QMainWindow):
         rel_file = os.path.relpath(fname[0])
         sender: QPushButton = self.sender()
         sender.setText(rel_file)
+
+    def save_pics(self):
+        for i,ex in enumerate(self.experiments):
+            history_to_img(ex.history, i)
 
     def start(self):
         if self.state == State.stopped:
@@ -152,6 +163,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.start_calc(params)
             self.state = State.running
             self.start_pushButton.setEnabled(False)
+            self.pics_pushButton.setEnabled(False)
 
     def start_calc(self, params):
         # Step 2: Create a QThread object
@@ -181,6 +193,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.experiments = self.worker.result
 
         self.start_pushButton.setEnabled(True)
+        self.pics_pushButton.setEnabled(True)
 
         self.spinBox_iter_step.setEnabled(True)
         self.spinBox_iter_step.setMaximum(self.num_iter)

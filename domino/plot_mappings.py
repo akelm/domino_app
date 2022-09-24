@@ -13,7 +13,7 @@ strategy_all_blk = ListedColormap(("black", "black"))
 strategy_kD = cm.get_cmap('Greens', 32)
 
 dimming_factor = 0.30
-dimming_factor_all = 0.20
+dimming_factor_all = 0.225
 
 dimming = np.array([dimming_factor, dimming_factor, dimming_factor, 1])
 dimming_all = np.array([dimming_factor_all, dimming_factor_all, dimming_factor_all, 1])
